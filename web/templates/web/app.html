@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loguea — Productos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'web/css/app.css' %}" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <div>
+        <strong>Loguea</strong>
+        <span class="brand-sub">Gestión de productos</span>
+      </div>
+    </div>
+    <div class="top-actions" id="top-actions" hidden>
+      <span class="user-pill" id="user-label"></span>
+      <button type="button" class="btn ghost" id="btn-logout">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="panel" id="panel-login" aria-labelledby="login-title">
+      <h1 id="login-title" class="title">Entrar</h1>
+      <p class="lede">Usa tu usuario de Django (por ejemplo el usuario <code>demo</code> si lo creaste).</p>
+      <form id="form-login" class="form" autocomplete="on">
+        <label class="field">
+          <span>Usuario</span>
+          <input name="username" type="text" required autocomplete="username" />
+        </label>
+        <label class="field">
+          <span>Contraseña</span>
+          <input name="password" type="password" required autocomplete="current-password" />
+        </label>
+        <p class="msg err" id="login-error" hidden></p>
+        <button type="submit" class="btn primary" id="btn-login">Iniciar sesión</button>
+      </form>
+    </section>
+
+    <section class="panel wide" id="panel-app" hidden>
+      <div class="panel-head">
+        <h1 class="title">Productos</h1>
+        <button type="button" class="btn primary" id="btn-new">Nuevo producto</button>
+      </div>
+      <p class="msg err" id="app-error" hidden></p>
+
+      <div class="table-wrap">
+        <table class="data" id="table-products">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-products"></tbody>
+        </table>
+        <p class="empty" id="empty-products" hidden>No hay productos todavía.</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="modal" id="dialog-product">
+    <form method="dialog" id="form-product" class="form">
+      <h2 class="title sm" id="dialog-title">Producto</h2>
+      <input type="hidden" name="id" id="field-id" />
+      <label class="field">
+        <span>Nombre</span>
+        <input name="nombre" id="field-nombre" type="text" required maxlength="200" />
+      </label>
+      <label class="field">
+        <span>Precio</span>
+        <input name="precio" id="field-precio" type="number" step="0.01" min="0" required />
+      </label>
+      <label class="field">
+        <span>Stock</span>
+        <input name="stock" id="field-stock" type="number" min="0" step="1" required />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" id="btn-cancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="btn-save">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="{% static 'web/js/app.js' %}"></script>
+</body>
+</html>
