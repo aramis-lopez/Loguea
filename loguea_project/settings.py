@@ -8,6 +8,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Registra nivel SECURITY para logging (debe ejecutarse antes de configurar handlers).
+import core.security_levels  # noqa: E402, F401
+
+LOGS_DIR = BASE_DIR / "logs"
+LOGS_DIR.mkdir(exist_ok=True)
+
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "dev-only-change-in-production-use-env",
@@ -34,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "core.middleware.RequestContextMiddleware",
+    "core.security_middleware.SecurityForensicsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -101,6 +108,18 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+# Fuerza bruta (login): intentos en ventana y bloqueo en segundos
+SECURITY_BF_THRESHOLD = int(os.environ.get("SECURITY_BF_THRESHOLD", "5"))
+SECURITY_BF_WINDOW_SEC = int(os.environ.get("SECURITY_BF_WINDOW_SEC", "900"))
+SECURITY_BF_BLOCK_SEC = int(os.environ.get("SECURITY_BF_BLOCK_SEC", "1800"))
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "loguea-forensics",
+    }
+}
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -116,12 +135,21 @@ LOGGING = {
             "datefmt": "%Y-%m-%dT%H:%M:%SZ",
             "json_ensure_ascii": False,
         },
+        "bitacora": {
+            "()": "core.bitacora_formatter.BitacoraFormatter",
+        },
     },
     "handlers": {
         "console_json": {
             "class": "logging.StreamHandler",
             "formatter": "json",
             "filters": ["request_context"],
+        },
+        "security_bitacora_file": {
+            "class": "logging.FileHandler",
+            "filename": str(LOGS_DIR / "security_bitacora.log"),
+            "formatter": "bitacora",
+            "encoding": "utf-8",
         },
     },
     "root": {
@@ -147,5 +175,10 @@ LOGGING = {
         "core": {"handlers": ["console_json"], "level": "INFO", "propagate": False},
         "accounts": {"handlers": ["console_json"], "level": "INFO", "propagate": False},
         "products": {"handlers": ["console_json"], "level": "INFO", "propagate": False},
+        "security.audit": {
+            "handlers": ["security_bitacora_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
     },
 }

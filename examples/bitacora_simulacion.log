@@ -1,0 +1,13 @@
+# Simulación de bitácora forense (ejemplo ilustrativo tras ataques de fuerza bruta + inyección)
+# Formato: [Timestamp] | [Nivel] | [Evento] | [Usuario: ...] | [IP] | [Endpoint] | [Status] | [User-Agent]
+
+[2026-04-05T14:22:01Z] | [WARNING] | [Acceso no autenticado (falta o token JWT inválido)] | [Usuario: Anónimo] | [203.0.113.44] | [/api/productos/] | [401] | [curl/8.7.1]
+[2026-04-05T14:22:05Z] | [WARNING] | [Acceso no autenticado (falta o token JWT inválido)] | [Usuario: Anónimo] | [203.0.113.44] | [/api/productos/] | [401] | [Mozilla/5.0 (compatible; Bot/1.0)]
+[2026-04-05T14:22:09Z] | [WARNING] | [Acceso no autenticado (falta o token JWT inválido)] | [Usuario: Anónimo] | [203.0.113.44] | [/api/auth/login/] | [401] | [python-requests/2.31.0]
+[2026-04-05T14:22:11Z] | [WARNING] | [Acceso no autenticado (falta o token JWT inválido)] | [Usuario: Anónimo] | [203.0.113.44] | [/api/auth/login/] | [401] | [python-requests/2.31.0]
+[2026-04-05T14:22:14Z] | [SECURITY] | [Bloqueo por fuerza bruta: umbral de intentos fallidos alcanzado] | [Usuario: Anónimo] | [203.0.113.44] | [/api/auth/login/] | [429] | [python-requests/2.31.0]
+[2026-04-05T14:22:18Z] | [SECURITY] | [Login rechazado: IP en periodo de bloqueo por fuerza bruta] | [Usuario: Anónimo] | [203.0.113.44] | [/api/auth/login/] | [429] | [python-requests/2.31.0]
+[2026-04-05T14:23:02Z] | [SECURITY] | [Intento de inyección SQL/XSS detectado en campo usuario (login)] | [Usuario: Anónimo] | [198.51.100.77] | [/api/auth/login/] | [400] | [Mozilla/5.0 (Windows NT 10.0; rv:109.0)]
+[2026-04-05T14:23:40Z] | [SECURITY] | [Patrón de inyección (SQLi/XSS) detectado en parámetros de petición] | [Usuario: Anónimo] | [198.51.100.77] | [/api/productos/] | [400] | [curl/8.7.1]
+[2026-04-05T14:24:01Z] | [WARNING] | [Patrón sospechoso en nombre de producto (revisión recomendada)] | [Usuario: ID:2] | [192.0.2.10] | [/api/productos/] | [---] | [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)]
+[2026-04-05T14:25:33Z] | [ERROR] | [Error interno del servidor (posible fuga de información si DEBUG expone trazas)] | [Usuario: ID:2] | [192.0.2.10] | [/api/productos/99999/] | [500] | [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)]

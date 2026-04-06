@@ -1,0 +1,24 @@
+Análisis breve — Bitácora forense (ejemplo simulado)
+====================================================
+
+Patrones de ataque observables en las líneas de ejemplo
+-------------------------------------------------------
+1) Fuerza bruta: varias entradas WARNING con 401 desde la misma IP en /api/auth/login/ seguidas de SECURITY con 429. Indica enumeración de credenciales o diccionario de contraseñas hasta activar el bloqueo por umbral.
+
+2) Persistencia tras bloqueo: líneas SECURITY "Login rechazado: IP en periodo de bloqueo" muestran que el atacante sigue probando mientras la IP sigue bloqueada (útil para correlación temporal y posible escalado a firewall/WAF).
+
+3) Inyección en login: SECURITY "Intento de inyección ... en campo usuario" con 400 — típico de SQLi clásica (' OR 1=1) o payloads XSS en el nombre de usuario.
+
+4) Inyección en query string: SECURITY "Patrón ... en parámetros de petición" con 400 — escaneo automatizado que mete payloads en la URL antes de llegar a la vista.
+
+5) Actividad sospechosa no bloqueante: WARNING con status "---" en nombre de producto — posible XSS/HTML escapado o falso positivo; conviene revisar el recurso creado y el historial del usuario.
+
+6) Error 500: ERROR en bitácora — fallo de aplicación o BD; en DEBUG=True podría filtrarse stack trace al cliente; debe investigarse aparte de los intentos maliciosos.
+
+Recomendaciones de mitigación (3)
+---------------------------------
+1) Rate limiting y CAPTCHA: delante del endpoint de login (p. ej. nginx limit_req, Cloudflare, o django-ratelimit) para suavizar la fuerza bruta antes de que llegue al umbral interno.
+
+2) Sanitización y capa de datos: mantener ORM/consultas parametrizadas (Django ya lo hace por defecto); en front, escapar salida para XSS; las heurísticas de log no sustituyen WAF ni revisiones de código.
+
+3) Hardening operativo: DEBUG=False en producción, cabeceras de seguridad (CSP, X-Content-Type-Options), rotación de JWT corta, alertas SIEM sobre picos de SECURITY/429 por IP y bloqueo automático en firewall a partir de la bitácora.
